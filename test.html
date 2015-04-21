@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Ajax测试</title>
+    <link rel="stylesheet" href="/testAll/all.min.css"/>
+    <link rel="stylesheet" href="/testAll/pretty-json.css"/>
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        form {
+            float: left;
+            width: 350px;
+        }
+
+        form p {
+            width: 100%;
+            float: left;
+            display: block;
+            clear: both;
+        }
+
+        form label {
+            float: left;
+            display: inline-block;
+            width: 80px;
+        }
+
+        form input[type=text],
+        form textarea {
+            float: left;
+            display: inline-block;
+            width: 250px;
+        }
+
+        form input[type=submit] {
+            width: 100px;
+            height: 40px;
+        }
+
+        #ajax-result {
+            padding: 10px;
+            margin-left: 350px;
+            border: 1px solid #ccc;
+            min-height: 500px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <form id="ajax">
+        <legend>测试Ajax接口</legend>
+
+        <p><label for="ajax-url">URL:</label>
+            <input type="text" id="ajax-url" name="ajax-url"
+                   placeholder="可不填，默认为：./_bfwajax.do"/></p>
+
+        <p><label for="ajax-method">Method:</label>
+            <input type="text" id="ajax-method" name="ajax-method"
+                   value="curLoginUserInfo" required/></p>
+
+        <p><label for="ajax-params">Params:</label>
+            <textarea id="ajax-params" name="ajax-params" rows="20"></textarea></p>
+
+        <p><input type="submit" value="执行"/></p>
+    </form>
+    <div id="ajax-result">
+    </div>
+</div>
+<script src="/testAll/jquery-1.11.1.js"></script>
+<script src="/testAll/underscore.js"></script>
+<script src="/testAll/backbone.js"></script>
+<script src="/testAll/pretty-json.js"></script>
+<script>
+    $(function () {
+
+        $("#ajax").submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: $("#ajax-url").val() || "./_bfwajax.do",
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    "json": JSON.stringify({
+                        "method": $("#ajax-method").val() || "default",
+                        "params": $("#ajax-params").val() ? JSON.parse($("#ajax-params").val()) : {}
+                    })
+                },
+                success: function (data, textStatus, jqXHR) {
+                    var _div = $("#ajax-result");
+                    var _text = new PrettyJSON.view.Node({
+                        el: _div,
+                        data: data
+                    }).expandAll();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    //console.error(textStatus);
+                },
+                complete: function (jqXHR) {
+                    //console.info(jqXHR);
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>
